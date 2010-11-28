@@ -1,4 +1,8 @@
 StandaloneWidgets::Application.routes.draw do
+  get "widgets/index"
+  match "widgets", :to => "widgets#index"
+  get "front_page/index"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
@@ -48,7 +52,7 @@ StandaloneWidgets::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => "welcome#index"
+   root :to => "front_page#index"
 
   # See how all your routes lay out with "rake routes"
 

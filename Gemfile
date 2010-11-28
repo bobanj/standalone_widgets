@@ -1,12 +1,16 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.0'
+gem 'rails', '3.0.3'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'mysql2'
-
+gem "compass", ">= 0.10.6"
+gem 'haml'
+gem 'haml-rails'
+gem 'apotomo', '~>1.0', :require => 'apotomo'
+gem 'nokogiri'
 # Use unicorn as the web server
 # gem 'unicorn'
 

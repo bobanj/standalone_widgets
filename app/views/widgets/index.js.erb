@@ -1,0 +1,133 @@
+if (!"console" in window) {
+    window.console = {log:function() {
+    }}
+}
+        APOTOMO = window.APOTOMO || {};
+        (function() {
+            if (APOTOMO && APOTOMO.Widget) {
+                return;
+            }
+            APOTOMO.Widget = function(options) {
+                // Initialize
+                this.init(options)
+            };
+
+            // Widget helper methods and vars
+            APOTOMO.Widget.isLoaded = false;
+            APOTOMO.Widget.loadedStylesheet = false;
+            APOTOMO.Widget.isUpdating = false;
+            APOTOMO.Widget.WIDGET_NUMBER = 0;
+            APOTOMO.Widget.jsonP = function(source, callback) {
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = source;
+                document.getElementsByTagName("head")[0].appendChild(script);
+                callback(script);
+                return script;
+            };
+
+            //Creates a script element in the documents head
+            APOTOMO.Widget.requestJavascript = function(source) {
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = source;
+                document.getElementsByTagName("head")[0].appendChild(script);
+            };
+
+            //Creates a script/stylesheet element in the documents head
+            APOTOMO.Widget.requestStylesheet = function(stylesheet_url) {
+                var stylesheet = document.createElement("link");
+                stylesheet.rel = "stylesheet";
+                stylesheet.type = "text/css";
+                stylesheet.href = stylesheet_url;
+                stylesheet.media = "all";
+                document.lastChild.firstChild.appendChild(stylesheet);
+                APOTOMO.Widget.loadedStylesheet = true;
+                return stylesheet;
+            };
+            //Removes Element
+            APOTOMO.removeElement = function(element) {
+                try {
+                    element.parentNode.removeChild(element)
+                } catch(f) {
+                }
+            };
+
+            APOTOMO.Widget.prototype = function() {
+                // constants
+                var BASE_URL = '<%= HOME_PAGE_URL %>';
+                var WIDGETS_PATH = '/widgets/render_event_response?';
+                var UPDATE_POSTS_CALLBACK = 'callback=APOTOMO.Widget.updatePosts&source=apotomo_widget&type=update';
+                var STYLESHEET = BASE_URL + '/stylesheets/compiled/widget_apotomo_';
+                var MINIMUM_REFRESH_INTERVAL = 300000; //5 minutes
+                var BG_GRADIENT = {start:"#E567B1", end: "#84004D"};
+                var BORDER_RADIUS = '12px';
+                // constructor
+                return{init:function(options) {
+                    var self = this;
+                    this._widgetNumber = ++APOTOMO.Widget.WIDGET_NUMBER;
+                    var theme = options.theme ? options.theme : 'default';
+                    APOTOMO.Widget.requestStylesheet(STYLESHEET + theme + '.css');
+                    this.script_element = null;
+                    document.write('<%=escape_javascript(render_widget('apotomo_widget')) %>');
+                    this.refreshInterval = (options.refreshInterval >= MINIMUM_REFRESH_INTERVAL) ? options.refreshInterval : MINIMUM_REFRESH_INTERVAL;
+                    this.refresh_img = this.setRefreshOnClick();
+                    this.widget_container = document.getElementById('apotomo_widget');
+                    this.posts = document.getElementById('apotomo_posts');
+                    this.autoRefresh();
+                    APOTOMO.Widget.isLoaded = true;
+                    // Update news callback
+                    APOTOMO.Widget["updatePosts"] = function(data) {
+                        APOTOMO.Widget.isUpdating = true;
+                        clearTimeout(self.refresh_timer_id);
+                        self.autoRefresh();
+                        APOTOMO.removeElement(self.script_element);
+                        if (data.length > 0) {
+                            self.posts.innerHTML = '';
+                            var posts = [];
+                            for (var i = 0; i < data.length; i++) {
+                                posts.push('<a href="' + data[i].url + '" target="_blank">' + data[i].title + '</a>');
+                            }
+                            self.posts.innerHTML = posts.join('');
+                        }
+                        self.hideUpdateSpinner();
+                        APOTOMO.Widget.isUpdating = false;
+                    };
+                },
+                    setRefreshOnClick:function() {
+                        var self = this;
+                        var refresh_img = document.getElementById('apotomo_refresh_img');
+                        refresh_img.onclick = function() {
+                            if (!APOTOMO.Widget.isUpdating) {
+                                self.update();
+                            }
+                        };
+                        return refresh_img;
+                    },
+                    autoRefresh:function() {
+                        var self = this;
+                        if (!APOTOMO.Widget.isUpdating) {
+                            self.update();
+                        }
+                        self.refresh_timer_id = setTimeout(function() {
+                            self.autoRefresh.call(self);
+                        }, self.refreshInterval);
+                    },
+                    update:function() {
+                        var self = this;
+                        APOTOMO.Widget.isUpdating = true;
+                        self.showUpdateSpinner();
+                        APOTOMO.Widget.jsonP(BASE_URL + WIDGETS_PATH + UPDATE_POSTS_CALLBACK, function(script_element) {
+                            APOTOMO.removeElement(self.script_element);
+                            self.script_element = script_element;
+                        });
+                    },
+                    showUpdateSpinner:function() {
+                        this.refresh_img.src = BASE_URL + '/images/ajax_loader.gif';
+                    },
+                    hideUpdateSpinner:function() {
+                        this.refresh_img.src = BASE_URL + '/images/ajax_loader_static.gif';
+                    }
+                }
+            }();
+        })();

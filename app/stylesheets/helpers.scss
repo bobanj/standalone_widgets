@@ -1,0 +1,4 @@
+@import 'screen';
+@mixin ab_image($image_name){
+  background-image : url(http://#{$host_url}/images/#{$image_name});
+}
