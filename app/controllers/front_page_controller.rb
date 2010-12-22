@@ -6,6 +6,10 @@ class FrontPageController < ApplicationController
   end
 
   def index
+    render :layout => 'widget_example'
+  end
+
+  def refresh_css
   end
 
 end

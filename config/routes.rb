@@ -2,6 +2,7 @@ StandaloneWidgets::Application.routes.draw do
   get "widgets/index"
   match "widgets", :to => "widgets#index"
   get "front_page/index"
+  get "front_page/refresh_css"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

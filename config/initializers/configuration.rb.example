@@ -1,0 +1,3 @@
+ActiveRecord::Base.include_root_in_json = false
+HOME_PAGE_URL = 'http://widgets.jovanoski.net'
+EXAMPLE_JS_SRC = HOME_PAGE_URL + "/widgets"
