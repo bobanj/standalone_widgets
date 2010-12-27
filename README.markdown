@@ -5,4 +5,4 @@ Standalone Widgets Using RoR and javascript.
 4. rails server
 
 Screenshot:
-![standalone_widgets!](https://github.com/bobanj/standalone_widgets/raw/master/public/images/screenshot.png)
+![widgets!](https://github.com/bobanj/standalone_widgets/raw/master/public/images/screenshot.png)
