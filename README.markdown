@@ -5,7 +5,8 @@ Standalone Widgets Using RoR and javascript.
 * rake apotomo:get_links
 * rails server
 
-You can also check it at: http://widgets.jovanoski.net
+You can also check it at: 
+[standalone_widgets](http://widgets.jovanoski.net "Standalone Widgets")
 
 Screenshot:
 ==========================
