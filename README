@@ -1,0 +1,8 @@
+Standalone Widgets Using RoR and javascript.
+1. bundle install
+2. run migrations
+3. rake apotomo:get_links
+4. rails server
+
+Screenshot:
+![standalone_widgets!](http://www.boban.jovanoski.net/wp-content/uploads/2010/12/Screenshot-1024x144.png)
