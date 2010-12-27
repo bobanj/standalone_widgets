@@ -72,12 +72,30 @@ if (!"console" in window) {
                 return null;
             };
 
+            APOTOMO.getElementsByClass = function (searchClass, node, tag) {
+                var classElements = new Array();
+                if (node == null)
+                    node = document;
+                if (tag == null)
+                    tag = '*';
+                var els = node.getElementsByTagName(tag);
+                var elsLen = els.length;
+                var pattern = new RegExp("(^|\\s)" + searchClass + "(\\s|$)");
+                for (var i = 0,j = 0; i < elsLen; i++) {
+                    if (pattern.test(els[i].className)) {
+                        classElements[j] = els[i];
+                        j++;
+                    }
+                }
+                return classElements;
+            };
+
             //Gets first element by class that is inside the provided element
             APOTOMO.getFirstElementByClass = function(classname, element) {
                 return APOTOMO.elementFindFirstMatchingChild(element,
-                        function(element) {
-                            return element.className == classname;
-                        });
+                                                            function(element) {
+                                                                return element.className == classname;
+                                                            });
             };
 
             APOTOMO.Widget.prototype = function() {
@@ -97,7 +115,11 @@ if (!"console" in window) {
                     this.script_element = null;
                     document.write('<%=escape_javascript(render_widget('apotomo_widget')) %>');
                     this.refresh_interval = (options.refresh_interval >= MINIMUM_REFRESH_INTERVAL) ? options.refresh_interval : MINIMUM_REFRESH_INTERVAL;
-                    this.widget_container = document.getElementsByClassName('apotomo_widget')[this.widget_number];
+                    if (document.getElementsByClassName) {
+                        this.widget_container = document.getElementsByClassName('apotomo_widget')[this.widget_number];
+                    } else {
+                        this.widget_container = APOTOMO.getElementsByClass('apotomo_widget')[this.widget_number];
+                    }
                     this.widget_container.className = this.widget_container.className + ' ' + theme;
                     this.posts = APOTOMO.getFirstElementByClass('apotomo_posts', this.widget_container);
                     this.refresh_img = this.setRefreshOnClick();
@@ -147,7 +169,7 @@ if (!"console" in window) {
                         self.is_updating = true;
                         self.showUpdateSpinner();
                         var callback_path = 'callback=APOTOMO.Widget.updatePosts_' + self.widget_number + '&source=apotomo_widget&type=update';
-                        APOTOMO.Widget.jsonP(BASE_URL + WIDGETS_PATH + callback_path , function(script_element) {
+                        APOTOMO.Widget.jsonP(BASE_URL + WIDGETS_PATH + callback_path, function(script_element) {
                             APOTOMO.removeElement(self.script_element);
                             self.script_element = script_element;
                         });
